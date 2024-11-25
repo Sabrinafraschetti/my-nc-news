@@ -24,3 +24,26 @@ describe("GET /api", () => {
       });
   });
 });
+
+describe("GET /api/topics", () => {
+  test("200: Responds with an array of all topics", () => {
+    return request(app)
+    .get("/api/topics")
+    .expect(200)
+    .then(({ body }) => {
+      expect(body.topics.length).toBeGreaterThan(1)
+      body.topics.forEach((topic) => {
+        expect(typeof topic.slug).toBe("string")
+        expect(typeof topic.description).toBe("string")
+      })
+    })
+  })
+  test("404: responds with 'Route not found' for invalid endpoint", () => {
+    return request(app)
+      .get("/api/topic")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Route not found");
+      });
+  });
+})
