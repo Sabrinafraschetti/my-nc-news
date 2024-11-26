@@ -9,7 +9,7 @@ exports.customErrorHandler = (err, req, res, next) => {
         res.status(err.status).send({ msg: err.msg })
       } else next(err)
     }
-  
+
 exports.serverErrorHandler = (err, req, res) => {
     res.status(500).send({ msg: 'Internal Server Error' })
   }

@@ -1,4 +1,5 @@
 const db = require("../db/connection")
+const format = require("pg-format");
 
 exports.fetchCommentsById = (article_id, sort_by = "created_at", order = 'desc') => {
     const validSortBy = ["created_at", "author", "votes"]
@@ -23,4 +24,18 @@ exports.fetchCommentsById = (article_id, sort_by = "created_at", order = 'desc')
     return db.query(sqlQuery, queryValues).then(({ rows }) => {
         return rows
   })
+}
+
+exports.addCommentById = (commentBody, article_id) => {
+    const { username, body } = commentBody
+    const values = [body, article_id, username]
+
+    return db.query(`
+        INSERT INTO comments (body, article_id, author)
+        VALUES ($1, $2, $3)
+        RETURNING *;
+    `, values)
+    .then(({ rows }) => {
+        return rows[0]
+    })
 }
