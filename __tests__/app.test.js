@@ -4,6 +4,7 @@ const app = require("../app")
 const testData = require("../db/data/test-data");
 const seed = require("../db/seeds/seed");
 const db = require("../db/connection")
+require("jest-sorted")
 
 
 beforeEach(() => {
@@ -76,7 +77,7 @@ describe("GET /api/articles/:article_id", () => {
       expect(body.msg).toBe('article does not exist')
     })
   })
-  test("400 sends an appropriate status and error message when given an invalid id", () => {
+  test("400: sends an appropriate status and error message when given an invalid id", () => {
     return request(app)
     .get("/api/articles/not-an-article")
     .expect(400)
@@ -84,4 +85,98 @@ describe("GET /api/articles/:article_id", () => {
       expect(body.msg).toBe('Bad request')
     })
   })
+})
+
+describe("GET /api/articles", () => {
+  test("200: Responds with an array of all articles", () => {
+    return request(app)
+    .get("/api/articles")
+    .expect(200)
+    .then(({ body }) => {
+      expect(body.articles.length).toBeGreaterThan(1)
+      body.articles.forEach((article) => {
+        expect(article).toMatchObject({
+          article_id: expect.any(Number),
+          title: expect.any(String),
+          author: expect.any(String),
+          topic: expect.any(String),
+          created_at: expect.any(String),
+          votes: expect.any(Number),
+          article_img_url: expect.any(String),
+          comment_count: expect.any(String),
+        })
+      })
+    })
+  })
+  test("200: Articles are sorted by date in descending order", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toBeSortedBy("created_at", { descending: true });
+      });
+  });
+  test("200: Responds with articles filtered by author", () => {
+    return request(app)
+      .get("/api/articles?author=butter_bridge")
+      .expect(200)
+      .then(({ body }) => {
+        body.articles.forEach((article) => {
+          expect(article.author).toBe("butter_bridge");
+        })
+      })
+  })
+  test("200: Responds with articles filtered by topic", () => {
+    return request(app)
+      .get("/api/articles?topic=mitch")
+      .expect(200)
+      .then(({ body }) => {
+        body.articles.forEach((article) => {
+          expect(article.topic).toBe("mitch");
+        });
+      });     
+  })
+  test("200: Responds with articles that accept multiple queries", () => {
+    return request(app)
+      .get("/api/articles?topic=mitch&sort_by=title")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toBeSortedBy("title", { descending: true });
+        body.articles.forEach((article) => {
+          expect(article.topic).toBe("mitch");
+        });
+      });
+  });
+  test("404: Responds with an appropriate status and error message when given a valid but non-existent author", () => {
+    return request(app)
+      .get("/api/articles?author=non-existant-author")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("not found");
+      });
+  });
+  test("404: Responds with an appropriate status and error message when given a valid but non-existent topic", () => {
+    return request(app)
+      .get("/api/articles?topic=non-existant-topic")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("not found");
+      });
+  });
+  test("400: Responds with an appropriate status and error message when given an invalid sort_by", () => {
+    return request(app)
+      .get("/api/articles?sort_by=not-a-column")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
+  test("400: Responds with an appropriate status and error message when given an invalid order value", () => {
+    return request(app)
+      .get("/api/articles?order=invalid-order")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
 })
