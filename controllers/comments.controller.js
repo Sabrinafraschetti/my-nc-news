@@ -1,4 +1,4 @@
-const { fetchCommentsById, addCommentById } = require("../models/comments.models")
+const { fetchCommentsById, addCommentById, checkIfCommentExists, removeCommentById} = require("../models/comments.models")
 const { checkIfArticleExists } = require("../models/articles.model")
 const { checkIfUserExists } = require("../models/user.models")
 
@@ -20,7 +20,8 @@ exports.getCommentsByArticleId = (req, res, next) => {
     })
 }
 
-  exports.postCommentById = (req, res, next) => {
+
+exports.postCommentById = (req, res, next) => {
     const { body: commentBody } = req;
     const { article_id } = req.params;
   
@@ -42,3 +43,17 @@ exports.getCommentsByArticleId = (req, res, next) => {
         next(err)
       });
   };
+
+  exports.deleteCommentById = (req, res, next) => {
+    const { comment_id } = req.params
+
+    checkIfCommentExists(comment_id)
+      .then(() => {
+        return removeCommentById(comment_id).then(() => {
+            res.status(204).send()
+        })
+      })
+    .catch((err) => {
+        next(err)
+    })
+}
