@@ -51,9 +51,9 @@ exports.fetchArticles = (author, topic, sort_by = "created_at", order = "desc") 
   ORDER BY ${sort_by} ${order}; `
 
   return db.query(sqlQuery, queryValues).then(({ rows }) => {
-    if (rows.length === 0) {
-      return Promise.reject({ status: 404, msg: `not found` })
-    }
+    // if (rows.length === 0) {
+    //   return Promise.reject({ status: 404, msg: `not found` })
+    // }
     return rows
   });
 };
