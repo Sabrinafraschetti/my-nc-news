@@ -1,4 +1,4 @@
-const { fetchArticleById, fetchArticles } = require("../models/articles.model")
+const { fetchArticleById, fetchArticles, updateArticleVotesById, checkIfArticleExists } = require("../models/articles.model")
 
 exports.getArticleById = (req, res, next) => {
     const { article_id } = req.params
@@ -15,6 +15,27 @@ exports.getArticles = (req, res, next) => {
     fetchArticles(author, topic, sort_by, order).then((articles) => {
         res.status(200).send({ articles })
     })
+    .catch((err) => {
+        next(err)
+    })
+}
+
+exports.patchArticleVotesById = (req, res, next) => {
+    const { article_id } = req.params
+    const body = req.body
+
+    console.log(body.inc_votes)
+
+    if (!body.inc_votes) {
+        return res.status(400).send({ msg: 'Bad request: inc_votes is required' });
+      }
+
+      checkIfArticleExists(article_id)
+      .then(() => {
+        return updateArticleVotesById(body, article_id).then((article) => {
+            res.status(200).send({ article })
+        })
+      })
     .catch((err) => {
         next(err)
     })

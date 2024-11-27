@@ -66,3 +66,17 @@ exports.checkIfArticleExists = (article_id) => {
       }
     });
 };
+
+exports.updateArticleVotesById = (body, article_id) => {
+  const { inc_votes } = body
+  const values = [inc_votes, article_id]
+  
+  return db.query(`UPDATE articles
+    SET votes = votes + $1
+    WHERE article_id = $2
+    RETURNING *;
+    `, values)
+    .then(({ rows }) => {
+      return rows[0]
+    })
+}
