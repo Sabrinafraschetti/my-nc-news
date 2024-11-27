@@ -341,7 +341,7 @@ test('404: Responds with an error when "username" does not exist', () => {
   })
 })
 
-describe.only("PATCH /api/articles/:article_id", () => {
+describe("PATCH /api/articles/:article_id", () => {
   test("200: Responds with patched article", () => {
     const updatedArticle = { inc_votes: 1 }
     
@@ -419,4 +419,28 @@ describe.only("PATCH /api/articles/:article_id", () => {
         expect(body.msg).toBe('Bad request');
       });
   });
+})
+
+describe("DELETE /api/comments/comment_id", () => {
+  test("204: Responds with no content and deleted comment by id", () => {
+    return request(app)
+    .delete("/api/comments/1")
+    .expect(204)
+  })
+  test('404: Responds with an error when comment_id does not exist', () => {
+    return request(app)
+      .delete('/api/comments/999')
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Comment not found');
+      })
+  })
+  test('400: Responds with an error when comment_id is invalid', () => {
+    return request(app)
+      .delete('/api/comments/not-a-comment')
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Bad request');
+      })
+  })
 })
