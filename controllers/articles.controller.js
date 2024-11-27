@@ -1,5 +1,6 @@
 const { fetchArticleById, fetchArticles, updateArticleVotesById, checkIfArticleExists } = require("../models/articles.model")
 const { checkIfAuthorExists } = require("../models/user.models")
+const { checkIfTopicExists } = require("../models/topics.model")
 
 exports.getArticleById = (req, res, next) => {
     const { article_id } = req.params
@@ -18,6 +19,10 @@ exports.getArticles = (req, res, next) => {
     if (author){
         promises.push(checkIfAuthorExists(author))
     }
+    if (topic){
+        promises.push(checkIfTopicExists(topic))
+    }
+
     Promise.all(promises)
     .then(([articles]) => {
          res.status(200).send({ articles })
