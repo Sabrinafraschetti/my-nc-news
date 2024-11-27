@@ -58,6 +58,33 @@
           }
         ]
       }
+    },
+    "POST /api/articles/:article_id/comments": {
+      "description": "Responds with the posted comment",
+      "queries": ["commentBody", "article_id"],
+      "exampleResponse": {
+        "comment": [
+          {
+            "comment_id": 19,
+            "body": "this is a new comment",
+            "article_id": 1,
+            "author": "butter_bridge",
+            "votes": 0,
+            "created_at": "2024-11-26T18:27:24.315Z"
+          }
+        ]
+      }
+    },
+    "PATCH /api/articles/:article_id": {
+      "description": "Responds with patched article",
+      "queries": [],
+      "exampleResponse": {
+        "article": [
+          {
+            
+          }
+        ]
+      }
     }
   }
 }
