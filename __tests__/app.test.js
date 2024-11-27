@@ -65,6 +65,7 @@ describe("GET /api/articles/:article_id", () => {
           created_at: expect.any(String),
           votes: 100,
           article_img_url: "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          comment_count: expect.any(String),
         })
       )
     })
