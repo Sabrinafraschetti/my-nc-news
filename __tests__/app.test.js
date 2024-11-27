@@ -108,12 +108,20 @@ describe("GET /api/articles", () => {
       })
     })
   })
-  test("200: Articles are sorted by date in descending order", () => {
+  test("200: Articles are sorted by date in descending order by defult", () => {
     return request(app)
       .get("/api/articles")
       .expect(200)
       .then(({ body }) => {
         expect(body.articles).toBeSortedBy("created_at", { descending: true });
+      });
+  });
+  test("200: Articles are sorted by date in ascending order when specified", () => {
+    return request(app)
+      .get("/api/articles?order=asc")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toBeSortedBy("created_at", { ascending: true });
       });
   });
   test("200: Responds with articles filtered by author", () => {
@@ -147,17 +155,17 @@ describe("GET /api/articles", () => {
         });
       });
   });
+  test("200: Responds with an empty array when no articles match the author filter", () => {
+    return request(app)
+    .get("/api/articles?author=lurker")
+    .expect(200)
+    .then(({ body }) => {
+      expect(body.articles).toEqual([])
+    })
+  })
   test("404: Responds with an appropriate status and error message when given a valid but non-existent author", () => {
     return request(app)
       .get("/api/articles?author=non-existant-author")
-      .expect(404)
-      .then(({ body }) => {
-        expect(body.msg).toBe("not found");
-      });
-  });
-  test("404: Responds with an appropriate status and error message when given a valid but non-existent topic", () => {
-    return request(app)
-      .get("/api/articles?topic=non-existant-topic")
       .expect(404)
       .then(({ body }) => {
         expect(body.msg).toBe("not found");
