@@ -24,10 +24,6 @@ exports.patchArticleVotesById = (req, res, next) => {
     const { article_id } = req.params
     const body = req.body
 
-    if (!body.inc_votes) {
-        return res.status(400).send({ msg: 'Bad request: inc_votes is required' });
-      }
-
       checkIfArticleExists(article_id)
       .then(() => {
         return updateArticleVotesById(body, article_id).then((article) => {
