@@ -163,12 +163,28 @@ describe("GET /api/articles", () => {
       expect(body.articles).toEqual([])
     })
   })
+  test("200: Responds with an empty array when no articles match the topics filter", () => {
+    return request(app)
+    .get("/api/articles?topic=paper")
+    .expect(200)
+    .then(({ body }) => {
+      expect(body.articles).toEqual([])
+    })
+  })
   test("404: Responds with an appropriate status and error message when given a valid but non-existent author", () => {
     return request(app)
       .get("/api/articles?author=non-existant-author")
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe("not found");
+        expect(body.msg).toBe("User not found");
+      });
+  });
+  test("404: Responds with an appropriate status and error message when given a valid but non-existent topic", () => {
+    return request(app)
+      .get("/api/articles?topic=non-existant-topic")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Topic not found");
       });
   });
   test("400: Responds with an appropriate status and error message when given an invalid sort_by", () => {
