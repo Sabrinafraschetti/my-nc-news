@@ -25,14 +25,7 @@ exports.postCommentById = (req, res, next) => {
     const { body: commentBody } = req;
     const { article_id } = req.params;
   
-    if (!commentBody.username || !commentBody.body) {
-      return res.status(400).send({ msg: 'Bad request' });
-    }
-  
     checkIfArticleExists(article_id)
-      .then(() => {
-        return checkIfUserExists(commentBody.username);
-      })
       .then(() => {
         return addCommentById(commentBody, article_id);
       })

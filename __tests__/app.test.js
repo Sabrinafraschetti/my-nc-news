@@ -336,7 +336,7 @@ test('404: Responds with an error when "username" does not exist', () => {
     .send(newComment)
     .expect(404)
     .then(({ body }) => {
-      expect(body.msg).toBe('User not found');
+      expect(body.msg).toBe('Not found');
     });
   })
 })
@@ -405,7 +405,7 @@ describe("PATCH /api/articles/:article_id", () => {
       .send(newVote)
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe('Bad request: inc_votes is required');
+        expect(body.msg).toBe('Bad request');
       });
   });
   test('400: Responds with an appropriate status and error message if inc_votes is not a valid number', () => {
@@ -441,6 +441,32 @@ describe("DELETE /api/comments/comment_id", () => {
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe('Bad request');
+      })
+  })
+})
+
+describe("GET /api/users", () => {
+  test("200: Responds with an array of all the users", () => {
+    return request(app) 
+    .get("/api/users")
+    .expect(200)
+    .then(({ body }) => {
+      expect(body.users.length).toBeGreaterThan(1)
+      body.users.forEach((user) => {
+        expect(user).toMatchObject({
+          username: expect.any(String),
+          name: expect.any(String),
+          avatar_url: expect.any(String),
+        })
+      })
+    })
+  })
+  test("404: responds with 'Route not found' for invalid endpoint", () => {
+    return request(app)
+      .get("/api/user")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Route not found");
       })
   })
 })

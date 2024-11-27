@@ -4,6 +4,7 @@ const { getTopics } = require("./controllers/topics.controller")
 const { getArticleById, getArticles, patchArticleVotesById } = require("./controllers/articles.controller")
 const { psqlErrorHandler, customErrorHandler, serverErrorHandler } = require("./errorHandling")
 const { getCommentsByArticleId, postCommentById, deleteCommentById } = require("./controllers/comments.controller")
+const { getUsers } = require("./controllers/users.controller")
 const app = express()
 
 app.use(express.json());
@@ -23,6 +24,8 @@ app.post("/api/articles/:article_id/comments", postCommentById)
 app.patch("/api/articles/:article_id", patchArticleVotesById)
 
 app.delete("/api/comments/:comment_id", deleteCommentById)
+
+app.get("/api/users", getUsers)
 
 app.use('/*', (req, res) => {
     res.status(404).send({ msg: 'Route not found' })
