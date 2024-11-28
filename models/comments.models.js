@@ -1,5 +1,4 @@
 const db = require("../db/connection")
-const format = require("pg-format");
 
 exports.fetchCommentsById = (article_id, sort_by = "created_at", order = 'desc') => {
     const validSortBy = ["created_at", "author", "votes"]
