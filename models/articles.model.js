@@ -1,7 +1,7 @@
 const db = require("../db/connection")
 
 exports.fetchArticleById = (article_id) => {
-    return db.query(`SELECT articles.*, COUNT(comments.comment_id) AS comment_count 
+    return db.query(`SELECT articles.*, CAST(COUNT(comments.comment_id) AS INTEGER) AS comment_count 
       FROM articles 
       LEFT JOIN comments ON articles.article_id = comments.article_id
       WHERE articles.article_id = $1
@@ -34,7 +34,7 @@ exports.fetchArticles = (author, topic, sort_by = "created_at", order = "desc") 
       articles.created_at,
       articles.votes,
       articles.article_img_url,
-      COUNT(comments.comment_id) AS comment_count
+      CAST(COUNT(comments.comment_id) AS INTEGER) AS comment_count
     FROM articles
     LEFT JOIN comments ON comments.article_id = articles.article_id `
   if (author){
