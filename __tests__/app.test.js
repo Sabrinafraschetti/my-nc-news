@@ -65,7 +65,7 @@ describe("GET /api/articles/:article_id", () => {
           created_at: expect.any(String),
           votes: 100,
           article_img_url: "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
-          comment_count: expect.any(String),
+          comment_count: expect.any(Number),
         })
       )
     })
@@ -104,7 +104,7 @@ describe("GET /api/articles", () => {
           created_at: expect.any(String),
           votes: expect.any(Number),
           article_img_url: expect.any(String),
-          comment_count: expect.any(String),
+          comment_count: expect.any(Number),
         })
       })
     })
@@ -145,6 +145,14 @@ describe("GET /api/articles", () => {
         });
       });     
   })
+  test("200: Responds with articles that accept multiple queries", () => {
+    return request(app)
+      .get("/api/articles?order=asc&sort_by=title")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toBeSortedBy("title", { ascending: true });
+      });
+  });
   test("200: Responds with articles that accept multiple queries", () => {
     return request(app)
       .get("/api/articles?topic=mitch&sort_by=title")
@@ -486,12 +494,29 @@ describe("GET /api/users", () => {
       })
     })
   })
-  test("404: responds with 'Route not found' for invalid endpoint", () => {
+})
+
+describe("GET /api/users/:username", () => {
+  test("200: Responds with user with corresponding username", () => {
     return request(app)
-      .get("/api/user")
-      .expect(404)
-      .then(({ body }) => {
-        expect(body.msg).toBe("Route not found");
-      })
+    .get("/api/users/butter_bridge")
+    .expect(200)
+    .then(({ body }) => {
+      expect(body.user).toEqual(
+        expect.objectContaining({
+          username: 'butter_bridge',
+          avatar_url: 'https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg',
+          name: 'jonny',
+        })
+      )
+    })
+  })
+  test("404: Responds with an appropriate status and error message when given a valid but non-existant username ", () => {
+    return request(app)
+    .get("/api/users/not-a-user")
+    .expect(404)
+    .then(({ body }) => {
+      expect(body.msg).toBe('user does not exist')
+    })
   })
 })
